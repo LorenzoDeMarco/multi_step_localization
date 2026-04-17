@@ -1,6 +1,6 @@
 [submodule "actionformer"]
 	path = actionformer
-	url = https://github.com/rohithpeddi/actionformer_release.git
+	url = https://github.com/LorenzoDeMarco/actionformer.git
 [submodule "captaincook"]
 	path = captaincook
 	url = https://github.com/CaptainCook4D/annotations.git

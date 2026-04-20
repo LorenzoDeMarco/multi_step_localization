@@ -31,6 +31,4 @@ python eval.py configs/captaincook_egovlp.yaml ${RUN_NAME} \
 echo "Evaluation completed. Parsing results..."
 
 # Parse the results into the model_outputs folder
-python parse_results.py \
-    --results_path ./ckpt/${RUN_NAME}/results_all.json \
-    --output_csv ./model_outputs/egovlp_predictions.csv
+python parse_results.py

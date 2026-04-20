@@ -37,9 +37,7 @@ def main(args):
     cfg['dataset']['videos_type'] = args.videos_type
 
     json_file_path = cfg['dataset']['json_file']
-    json_file_dir = os.path.dirname(json_file_path)
-    json_file_name = os.path.basename(json_file_path).replace('.json', f'_{args.division_type}.json')
-    cfg['dataset']['json_file'] = os.path.join(json_file_dir, json_file_name)
+    cfg['dataset']['json_file'] = json_file_path
 
     backbone = args.backbone
     division_type = args.division_type

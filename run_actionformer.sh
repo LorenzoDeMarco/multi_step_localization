@@ -12,7 +12,7 @@ RUN_NAME="egovlp_baseline_run"
 
 echo "Starting ActionFormer Training with ${BACKBONE} features..."
 
-python train.py configs/error_dataset_custom_feature.yaml \
+python train.py configs/captaincook_egovlp.yaml \
     --backbone ${BACKBONE} \
     --division_type recordings \
     --feat_folder ${FEAT_FOLDER} \
@@ -21,7 +21,7 @@ python train.py configs/error_dataset_custom_feature.yaml \
 
 echo "Training completed. Starting Evaluation..."
 
-python eval.py configs/error_dataset_custom_feature.yaml ${RUN_NAME} \
+python eval.py configs/captaincook_egovlp.yaml ${RUN_NAME} \
     --backbone ${BACKBONE} \
     --division_type recordings \
     --feat_folder ${FEAT_FOLDER} \

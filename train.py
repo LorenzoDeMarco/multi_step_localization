@@ -67,7 +67,11 @@ def main(args):
     elif backbone == 'x3d':
         cfg['dataset']['input_dim'] = (192, 64)
         cfg['model']['input_dim'] = (192, 64)
-    pprint(cfg)
+    elif backbone == 'egovlp':
+     cfg['dataset']['input_dim'] = 768
+     cfg['model']['input_dim'] = 768
+     output_folder_name += "_egovlp"
+     pprint(cfg)
 
     # prep for output folder (based on time stamp)
     if not os.path.exists(cfg['output_folder']):

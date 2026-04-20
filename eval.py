@@ -99,6 +99,10 @@ def main(args):
         cfg['model']['input_dim'] = 400
     elif args.backbone == 'x3d':
         cfg['model']['input_dim'] = 400
+    elif args.backbone == 'egovlp':
+     cfg['model']['input_dim'] = 768
+     output_folder_name += "_egovlp"
+     pprint(cfg)
 
     # model
     model = make_meta_arch(cfg['model_name'], **cfg['model'])

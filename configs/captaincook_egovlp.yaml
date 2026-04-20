@@ -6,7 +6,7 @@ dataset: {
   feat_folder: ./data/egovlp_features,
   file_prefix: ~,
   file_ext: .npz,
-  num_classes: 352,
+  num_classes: 353,
   input_dim: 768,
   feat_stride: 16,
   num_frames: 16,

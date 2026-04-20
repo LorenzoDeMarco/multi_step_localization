@@ -1,6 +1,6 @@
-dataset_name: captaincook_error_dataset
-train_split: ['train']
-val_split: ['val']
+dataset_name: ego4d
+train_split: ['training', 'Training']
+val_split: ['validation', 'Validation']
 dataset: {
   json_file: ./captaincook_actionformer_annotations/combined/recordings.json,
   feat_folder: ./data/egovlp_features,

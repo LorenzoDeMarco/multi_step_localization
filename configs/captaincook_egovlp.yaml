@@ -8,8 +8,8 @@ dataset: {
   file_ext: .npz,
   num_classes: 352,
   input_dim: 768,
-  feat_stride: 64,
-  num_frames: 64,
+  feat_stride: 16,
+  num_frames: 16,
   default_fps: 1.876,
   trunc_thresh: 0.3,
   crop_ratio: [0.9, 1.0],
@@ -18,11 +18,11 @@ dataset: {
 model: {
   #Using the optimized bins calculated from the training set of captaincook4D
   regression_range: [
-    [0, 4], 
+    [0, 2], 
+    [2, 4], 
     [4, 8], 
     [8, 16], 
-    [16, 32], 
-    [32, 64], 
+    [16, 64], 
     [64, 10000]
   ],
   fpn_type: identity,

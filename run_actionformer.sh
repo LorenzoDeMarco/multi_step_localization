@@ -32,7 +32,7 @@ do
     #EVALUATION
     echo "-> Evaluation Fold ${FOLD}..."
     python eval.py ${CONFIG} ${RUN_NAME} \
-        --videos_type validation \
+        --videos_type all \
         --json_file ${JSON_PATH}
         
     echo "Fold ${FOLD} completato!"

@@ -57,9 +57,10 @@ def main(args):
             output_folder_name += f"_{sub_sample_size_str}"
 
     print(f"Output folder name: {output_folder_name}")
-    # ToDo: override the args.ckpt with the cfg generated ckpt folder
+
     dataset_name = cfg['dataset_name']
-    args.ckpt = os.path.join(cfg['output_folder'], dataset_name, output_folder_name + '_' + str(args.ckpt))
+    if not os.path.exists(args.ckpt):
+     args.ckpt = os.path.join(cfg['output_folder'], dataset_name, output_folder_name + '_' + str(args.ckpt))
 
     if ".pth.tar" in args.ckpt:
         assert os.path.isfile(args.ckpt), "CKPT file does not exist!"
@@ -72,7 +73,7 @@ def main(args):
             ckpt_file_list = sorted(glob.glob(os.path.join(args.ckpt, '*.pth.tar')))
             ckpt_file = ckpt_file_list[-1]
         assert os.path.exists(ckpt_file)
-    # ckpt_file = './ckpt/omnivore_recordings_4s_reproduce_ptg/epoch_110.pth.tar'
+    
 
     if args.topk > 0:
         cfg['model']['test_cfg']['max_seg_num'] = args.topk

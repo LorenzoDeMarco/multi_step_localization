@@ -185,7 +185,7 @@ if __name__ == '__main__':
     # Default is 30 for all backbones
     parser.add_argument('--num_frames', default=30, type=int, )
     parser.add_argument('--stride', default=30, type=int,)
-    parser.add_argument('--videos_type', default='', type=str,
+    parser.add_argument('--videos_type', default='all', type=str,
                         choices=['all', 'normal', 'error'])
     args = parser.parse_args()
     main(args)

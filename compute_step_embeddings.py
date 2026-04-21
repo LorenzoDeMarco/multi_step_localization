@@ -1,67 +1,79 @@
-"""
-Module for computing step-level embeddings from frame-level features
-using ActionFormer temporal predictions.
-"""
-
-import numpy as np
 import pandas as pd
+import numpy as np
 import os
-import argparse
+import torch
+from tqdm import tqdm
 
-def process_video_embeddings(video_id, predictions_df, features_dir, feature_fps=1.0):
-    video_preds = predictions_df[predictions_df['video_id'] == video_id]
-    feature_path = os.path.join(features_dir, f"{video_id}.npy")
+def create_step_embeddings():
+    # File paths
+    csv_path = "actionformer_predictions_full.csv"  # The CSV generated from ActionFormer
+    feat_dir = "./data/egovlp_features"            # Folder with original .npz files
+    output_file = "step_embeddings_dataset.pt"
     
-    if not os.path.exists(feature_path):
-        print(f"Warning: Features for {video_id} not found at {feature_path}. Skipping.")
-        return []
-        
-    video_features = np.load(feature_path)
-    step_embeddings = []
+    fps = 1.876 
     
-    for _, row in video_preds.iterrows():
-        start_idx = int(np.floor(row['start'] * feature_fps))
-        end_idx = int(np.ceil(row['end'] * feature_fps))
+    print(f"Loading predictions from {csv_path}...")
+    df = pd.read_csv(csv_path)
+    
+    # Group predictions by video
+    video_groups = df.groupby('video_id')
+    
+    # Dictionary to store the final tensors
+    # Format: { "video_id": Tensor of shape [num_steps, 768] }
+    video_step_embeddings = {}
+    
+    print("Computing step-level embeddings...")
+    for video_id, group in tqdm(video_groups):
+        feat_path = os.path.join(feat_dir, f"{video_id}.npz")
         
-        # Boundary enforcement
-        if start_idx >= end_idx:
-            end_idx = start_idx + 1
+        if not os.path.exists(feat_path):
+            print(f"Warning: Feature file missing for {video_id}")
+            continue
             
-        end_idx = min(end_idx, len(video_features))
-        start_idx = min(start_idx, len(video_features) - 1)
+        # Load the original EgoVLP features for this video
+        try:
+            npz_data = np.load(feat_path)
+            video_features = npz_data['features'] if 'features' in npz_data else npz_data['arr_0']
+        except Exception as e:
+            print(f"Error loading {feat_path}: {e}")
+            continue
+            
+        total_feats = video_features.shape[0]
+        step_embs = []
         
-        # Average pooling for the single step
-        segment_features = video_features[start_idx:end_idx, :]
-        step_emb = np.mean(segment_features, axis=0) 
-        
-        step_embeddings.append({
-            'video_id': video_id,
-            'start': row['start'],
-            'end': row['end'],
-            'label': row['label'],
-            'embedding': step_emb
-        })
-        
-    return step_embeddings
+        # Iterate over each predicted action (step) in the video
+        for _, row in group.iterrows():
+            start_time = row['start_time']
+            end_time = row['end_time']
+            
+            # Convert timestamps (seconds) to feature array indices
+            start_idx = int(start_time * fps)
+            end_idx = int(end_time * fps)
+            
+            # Handle edge cases
+            if start_idx >= total_feats:
+                start_idx = total_feats - 1
+            if end_idx <= start_idx:
+                end_idx = start_idx + 1 # Ensure at least 1 feature is selected
+            if end_idx > total_feats:
+                end_idx = total_feats
+                
+            # Extract all features within the (start, end) boundaries
+            feat_slice = video_features[start_idx:end_idx]
+            
+            # Compute a unique step-level embedding by averaging
+            step_emb = np.mean(feat_slice, axis=0)
+            
+            step_embs.append(step_emb)
+            
+        # Convert the list of embeddings into a PyTorch tensor
+        # Final shape for this video: [Number_of_steps, 768]
+        video_tensor = torch.tensor(np.array(step_embs), dtype=torch.float32)
+        video_step_embeddings[video_id] = video_tensor
 
-def main():
-    parser = argparse.ArgumentParser(description="Compute step-level embeddings.")
-    parser.add_argument('--preds_csv', type=str, required=True, help="Path to parsed predictions CSV")
-    parser.add_argument('--feat_dir', type=str, required=True, help="Directory containing .npy features")
-    parser.add_argument('--output_dir', type=str, default="step_embeddings", help="Output directory")
-    args = parser.parse_args()
-    
-    os.makedirs(args.output_dir, exist_ok=True)
-    preds_df = pd.read_csv(args.preds_csv)
-    unique_videos = preds_df['video_id'].unique()
-    
-    for vid in unique_videos:
-        embeddings = process_video_embeddings(vid, preds_df, args.feat_dir)
-        if embeddings:
-            # Save the computed step-level embeddings for each video
-            output_file = os.path.join(args.output_dir, f"{vid}_step_embeddings.npy")
-            np.save(output_file, embeddings)
-            print(f"Saved {len(embeddings)} step embeddings for video {vid}")
+    torch.save(video_step_embeddings, output_file)
+    print(f"\nSuccessfully saved step embeddings to {output_file}")
+    print(f"Total videos processed: {len(video_step_embeddings)}")
 
 if __name__ == "__main__":
-    main()
+    create_step_embeddings()

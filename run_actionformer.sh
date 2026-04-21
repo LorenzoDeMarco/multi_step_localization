@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Parametri base
 CONFIG="configs/captaincook_egovlp.yaml"
 FEAT_FOLDER="./data/egovlp_features"
 NUM_FRAMES=16
@@ -9,16 +10,15 @@ echo "====================================================="
 echo "   STARTING 5-FOLD CROSS-VALIDATION ACTIONFORMER     "
 echo "====================================================="
 
-for FOLD in 1
+for FOLD in 1 2 3 4 5
 do
     echo "-----------------------------------------------------"
     echo "                 INIZIO FOLD ${FOLD}                 "
     echo "-----------------------------------------------------"
     
     JSON_PATH="./captaincook_actionformer_annotations/combined/recordings_fold${FOLD}.json"
-    RUN_NAME="egovlp_fold${FOLD}"
     
-    #TRAINING
+    # TRAINING
     echo "-> Training Fold ${FOLD}..."
     python train.py ${CONFIG} \
         --backbone egovlp \
@@ -26,19 +26,26 @@ do
         --feat_folder ${FEAT_FOLDER} \
         --num_frames ${NUM_FRAMES} \
         --stride ${STRIDE} \
-        --json_file ${JSON_PATH} \
-        --output ${RUN_NAME}
+        --json_file ${JSON_PATH}
         
-    #EVALUATION
+    # EVALUATION 
     echo "-> Evaluation Fold ${FOLD}..."
-    python eval.py ${CONFIG} ${RUN_NAME} \
+    python eval.py ${CONFIG} egovlp_recordings \
+        --backbone egovlp \
+        --division_type recordings \
+        --num_frames ${NUM_FRAMES} \
+        --stride ${STRIDE} \
         --videos_type all \
         --json_file ${JSON_PATH}
         
-    echo "Fold ${FOLD} completato!"
+    # SAVE 
+    echo "-> Salvataggio pesi e risultati in egovlp_fold${FOLD}..."
+    mv ./ckpt/egovlp_recordings ./ckpt/egovlp_fold${FOLD}
+    
+    echo "Fold ${FOLD} completato con successo!"
     echo "-----------------------------------------------------"
 done
 
 echo "====================================================="
-echo "   5-FOLD CROSS-VALIDATION COMPLETATA CON SUCCESSO!  "
+echo "               TUTTI I 5 FOLD COMPLETATI             "
 echo "====================================================="

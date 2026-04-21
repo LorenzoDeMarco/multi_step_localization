@@ -8,7 +8,7 @@ def create_step_embeddings():
     # File paths
     csv_path = "actionformer_predictions_full.csv"  # The CSV generated from ActionFormer
     feat_dir = "./data/egovlp_features"            # Folder with original .npz files
-    output_file = "step_embeddings_dataset.pt"
+    output_file = "step_embeddings_dataset.npz"
     
     fps = 1.876 
     
@@ -68,11 +68,11 @@ def create_step_embeddings():
             
         # Convert the list of embeddings into a PyTorch tensor
         # Final shape for this video: [Number_of_steps, 768]
-        video_tensor = torch.tensor(np.array(step_embs), dtype=torch.float32)
-        video_step_embeddings[video_id] = video_tensor
+        video_array = np.array(step_embs, dtype=np.float32)
+        video_step_embeddings[video_id] = video_array
 
-    torch.save(video_step_embeddings, output_file)
-    print(f"\nSuccessfully saved step embeddings to {output_file}")
+    np.savez(output_file, **video_step_embeddings)
+    print(f"\nSalvataggio completato con successo in {output_file}")
     print(f"Total videos processed: {len(video_step_embeddings)}")
 
 if __name__ == "__main__":

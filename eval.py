@@ -178,7 +178,7 @@ if __name__ == '__main__':
                         choices=['omnivore', '3dresnet', 'videomae', 'slowfast', 'x3d', 'egovlp'])
     parser.add_argument('--division_type', default='recordings', type=str,
                         choices=['recordings', 'person', 'environment', 'recipes'])
-    parser.add_argument('--feat_folder', default='features', type=str,)
+    parser.add_argument('--feat_folder', default="./data/egovlp_features", type=str,)
 
     parser.add_argument('--json_file', default='', type=str, help='Path to JSON file (override)')
 

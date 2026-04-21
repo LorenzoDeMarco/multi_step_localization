@@ -33,6 +33,11 @@ def main(args):
     else:
         raise ValueError("Config file does not exist.")
 
+    # OVERRIDE json file if provided via CLI
+    if hasattr(args, 'json_file') and args.json_file != '':
+        cfg['dataset']['json_file'] = args.json_file
+        print(f"--> [OVERRIDE] Using JSON split: {args.json_file}")
+        
     cfg['dataset']['backbone'] = args.backbone
     cfg['dataset']['feat_folder'] = args.feat_folder
     cfg['dataset']['num_frames'] = args.num_frames
@@ -215,6 +220,8 @@ if __name__ == '__main__':
     parser.add_argument('--division_type', default='recordings', type=str,
                         choices=['recordings', 'person', 'environment', 'recipes'])
     parser.add_argument('--feat_folder', default='features', type=str, )
+
+    parser.add_argument('--json_file', default='', type=str, help='Path to JSON file (override)')
 
     # Default is 30 for all backbones
     parser.add_argument('--num_frames', default=30, type=int, )

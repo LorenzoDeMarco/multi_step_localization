@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Parametri base
 CONFIG="configs/captaincook_egovlp.yaml"
 FEAT_FOLDER="./data/egovlp_features"
 NUM_FRAMES=16
@@ -26,11 +25,12 @@ do
         --feat_folder ${FEAT_FOLDER} \
         --num_frames ${NUM_FRAMES} \
         --stride ${STRIDE} \
-        --json_file ${JSON_PATH}
+        --json_file ${JSON_PATH} \
+        --output fold${FOLD}
         
-    # EVALUATION 
+    # EVALUATION
     echo "-> Evaluation Fold ${FOLD}..."
-    python eval.py ${CONFIG} egovlp_recordings \
+    python eval.py ${CONFIG} fold${FOLD} \
         --backbone egovlp \
         --division_type recordings \
         --num_frames ${NUM_FRAMES} \
@@ -38,10 +38,6 @@ do
         --videos_type all \
         --json_file ${JSON_PATH}
         
-    # SAVE 
-    echo "-> Salvataggio pesi e risultati in egovlp_fold${FOLD}..."
-    mv ./ckpt/egovlp_recordings ./ckpt/egovlp_fold${FOLD}
-    
     echo "Fold ${FOLD} completato con successo!"
     echo "-----------------------------------------------------"
 done

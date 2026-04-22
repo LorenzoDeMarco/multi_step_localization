@@ -12,7 +12,7 @@ echo "====================================================="
 for FOLD in 1 2 3 4 5
 do
     echo "-----------------------------------------------------"
-    echo "                 INIZIO FOLD ${FOLD}                 "
+    echo "                 START FOLD ${FOLD}                 "
     echo "-----------------------------------------------------"
     
     JSON_PATH="./captaincook_actionformer_annotations/combined/recordings_fold${FOLD}.json"
@@ -28,20 +28,10 @@ do
         --json_file ${JSON_PATH} \
         --output fold${FOLD}
         
-    # EVALUATION
-    echo "-> Evaluation Fold ${FOLD}..."
-    python eval.py ${CONFIG} fold${FOLD} \
-        --backbone egovlp \
-        --division_type recordings \
-        --num_frames ${NUM_FRAMES} \
-        --stride ${STRIDE} \
-        --videos_type all \
-        --json_file ${JSON_PATH}
-        
-    echo "Fold ${FOLD} completato con successo!"
+    echo "Fold ${FOLD} completed successfully!"
     echo "-----------------------------------------------------"
 done
 
 echo "====================================================="
-echo "               TUTTI I 5 FOLD COMPLETATI             "
+echo "               ALL FOLDS COMPLETED SUCCESSFULLY       "
 echo "====================================================="
